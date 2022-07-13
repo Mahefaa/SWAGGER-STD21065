@@ -1,0 +1,193 @@
+openapi: 3.0.1
+info:
+  title: STD21065
+  description: My very first API
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+- url: https://STD21065.io/
+tags:
+- name: Students
+- name: Courses
+paths:
+  /students:
+    post:
+      tags:
+      - Students
+      summary: Adds a new student
+      operationId: addStudent
+      requestBody:
+        description: Student object that needs to be added to the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Student'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NewStudent'
+        400:
+          description: Error
+          content: {}
+    get:
+      tags:
+        - Students
+      summary: Get a list of students
+      operationId: getStudent
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Student'
+        400:
+          description: Error
+          content: {}
+  /courses:
+    get:
+      tags:
+        - Courses
+      summary: Get a list of courses
+      operationId: getCourses
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            format: int64
+          required: true    
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            format: int32
+          required: true
+      responses:
+        200:
+          description: List Course
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: "400_BAD_REQUEST"
+                  message:
+                    type: string
+                    example: "Parameter missing"
+    post:
+      tags:
+        - Courses
+      summary: Create new courses
+      requestBody:
+        description: Course
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewCourse'
+      responses:
+        200:
+          description: course
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+  /courses/{id}:
+    get:
+      tags:
+        - Courses
+      summary: Get course number id
+      operationId: getCourseID
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true  
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        400:
+          description: Bad Request
+          content: {}
+      
+components:
+  schemas:
+    Student:
+      type: object
+      properties:
+        id:
+          type: string
+      allOf:
+        - $ref: '#/components/schemas/NewStudent'    
+    NewStudent:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        group:
+          type: string
+    Course:
+      allOf:
+        - $ref: '#/components/schemas/NewCourse'
+      type: object
+      properties:
+        id:
+          type: string
+    NewCourse:
+      type: object
+      properties:
+        name:
+          type: string
+        teacher:
+          type: string
+        createdDatetime:
+          type: string
+          format: date
+          example: "2001-01-10"
+    
