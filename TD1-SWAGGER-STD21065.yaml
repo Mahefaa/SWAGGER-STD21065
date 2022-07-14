@@ -166,8 +166,6 @@ components:
     NewStudent:
       type: object
       properties:
-        id:
-          type: string
         name:
           type: string
         group:
