@@ -13,6 +13,9 @@ externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
+# Added by API Auto Mocking Plugin
+- description: SwaggerHub API Auto Mocking
+  url: https://virtserver.swaggerhub.com/HEIMAHEFA/std-21065/1.0.0
 - url: https://STD21065.io/
 tags:
 - name: Students
@@ -47,7 +50,7 @@ paths:
       tags:
         - Students
       summary: Get a list of students
-      operationId: getStudent
+      operationId: getStudents
       parameters:
         - name: page
           in: query
@@ -71,6 +74,99 @@ paths:
         400:
           description: Error
           content: {}
+  /students/{id}:
+    get:
+      tags:
+        - Students
+      summary: Get the specified student
+      operationId: getStudent
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        400:
+          description: Bad Request
+          content: {}
+    delete:
+      tags:
+        - Students
+      summary: Delete the specified student
+      operationId: deleteStudent
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
+      responses:
+        200:
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Returns the id of the deleted student"
+        400:
+          description: "bad request"
+          content: {}
+    put:
+      tags: 
+        - Students
+      parameters: 
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: integer
+      requestBody:
+        description: everything about student except id
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewStudent'
+      responses:
+        200:
+          description: "success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        400:
+          description: "bad request"
+    patch:
+      tags:
+        - Students
+      description: |
+        performs update on one of or combination of: 
+        * name
+        * group
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: partial info about the student
+        content: {}
+        
+      responses:
+        200:
+          description: "success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        
   /courses:
     get:
       tags:
@@ -188,4 +284,3 @@ components:
           type: string
           format: date
           example: "2001-01-10"
-    
