@@ -50,8 +50,34 @@ paths:
         - name: id
           in: path
           schema:
-            type: integer
+            type: string
           required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+    patch:
+      tags:
+        - "Room"
+      summary: performs update on room_capacity
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+            examples:
+              changeCapacity:
+                value:
+                  capacity: 30
       responses:
         200:
           description: Success
@@ -185,6 +211,42 @@ paths:
         400:
           description: Error
           content: {}
+    patch:
+      tags:
+        - "Film"
+      description: |
+         performs update on at most 4 of these per update
+          * title
+          * duration
+          * summary
+          * director
+          * date
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+            examples:
+              changeTitle:
+                value:
+                  Title: "string"
+              changeTitleAndDirector:
+                value:
+                  Title: "string"
+                  director: "string"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Film'
     delete:
       tags:
         - "Film"
@@ -210,8 +272,14 @@ paths:
     get:
       tags:
         - "Category"
-      summary: returns category list
+      summary: returns category list or a category if name is given
       operationId: getCategories
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: string
+            example: "marvel"
       responses:
         200:
           description: Success
@@ -238,28 +306,6 @@ paths:
               schema:
                 type: object
                 $ref: '#/components/schemas/Category'
-
-  /categories?name:
-    get:
-      tags:
-        - "Category"
-      summary: returns film list where title contains name
-      operationId: getFilmsByCategory
-      parameters:
-        - name: name
-          in: query
-          required: true
-          schema:
-            type: string
-            example: "marvel"
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: '#/components/schemas/Category'
     patch:
       tags:
         - "Category"
@@ -278,9 +324,12 @@ paths:
               type: array
               items:
                 type: object
-                properties:
-                  film_id:
-                    type: integer
+            examples:
+              AddFilm:
+                summary: add Films
+                value:
+                  - film_id: 5
+                  - film_id: 6
         required: true
       responses:
         200:
@@ -294,10 +343,10 @@ paths:
         - "Category"
       summary: deletes a category by giving its name
       parameters:
-        - name: id
-          in: path
+        - name: name
+          in: query
           schema:
-            type: integer
+            type: string
           required: true
       responses:
         200:
@@ -306,7 +355,7 @@ paths:
             text/plain:
               schema:
                 type: string
-                example: "Returns the nane of the deleted category"
+                example: "Returns the name of the deleted category"
         400:
           description: Error
           content: {}
