@@ -621,7 +621,9 @@ components:
       properties:
         name:
           type: string
-          example: monday
+          description: monday date
+          format: date
+          example: '2022-08-05'
         hours:
           type: array
           items:
