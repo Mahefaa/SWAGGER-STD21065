@@ -2,25 +2,6 @@ openapi: 3.0.1
 info:
   title: STD21065-TD2
   description: TD2
-  termsOfService: http://swagger.io/terms/
-  contact:
-    email: apiteam@swagger.io
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.0
-externalDocs:
-  description: Find out more about Swagger
-  url: http://swagger.io
-servers:
-# Added by API Auto Mocking Plugin
-- description: SwaggerHub API Auto Mocking
-  url: https://virtserver.swaggerhub.com/HEIMAHEFA/std-21065/1.0.0
-tags:
-- name: Room
-- name: Film
-- name: Projection
-- name: Category
 paths:
   /rooms:
     get:
@@ -272,14 +253,8 @@ paths:
     get:
       tags:
         - "Category"
-      summary: returns category list or a category if name is given
+      summary: returns category list
       operationId: getCategories
-      parameters:
-        - name: name
-          in: query
-          schema:
-            type: string
-            example: "marvel"
       responses:
         200:
           description: Success
@@ -304,32 +279,32 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 $ref: '#/components/schemas/Category'
     patch:
       tags:
         - "Category"
       parameters:
         - name: name
+          description: existing category you want to update.
           in: query
           required: true
           schema:
             type: string
-            example: "marvel"
-      description: adds new film to the category's film list
+            example: "action"
+      description: | 
+        permits update on one of those:
+          * name
+          * id
       requestBody:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                type: object
+              type: string
             examples:
-              AddFilm:
-                summary: add Films
+              changeName:
+                summary: change actual category's name
                 value:
-                  - film_id: 5
-                  - film_id: 6
+                  - name: "thriller"
         required: true
       responses:
         200:
@@ -337,7 +312,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
+                type: object
     delete:
       tags:
         - "Category"
@@ -539,7 +514,29 @@ paths:
         400:
           description: Error
           content: {}
-        
+  /calendar:
+    get:
+      tags:
+        - "Calendar"
+      description: return current week's projection list or given date's.
+      operationId: getWeek
+      parameters:
+        - name: day
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Calendar'
+
+        400:
+          description: error
 components:
   schemas:
     Room:
@@ -579,26 +576,16 @@ components:
       type: object
       properties:
         id:
-          type: integer
-        name:
-          type: string
-        filmList:
-          type: array
-          items:
-            $ref: '#/components/schemas/Film'
+          type: number
+          example: '1'
+      allOf:
+        - $ref: '#/components/schemas/NewCategory'
     NewCategory:
       type: object
       properties:
         name:
           type: string
-          example: thriller
-        filmList:
-          type: array
-          items:
-            type: object
-            properties:
-              film_id:
-                type: integer
+          example: "Action"
     NewProjection:
       type: object
       properties:
@@ -613,11 +600,37 @@ components:
             - A
             - B
     Projection:
-      allOf:
-        - $ref: '#/components/schemas/Film'
-        - $ref: '#/components/schemas/Room'
       type: object
       properties:
         projection_id:
           type: number
           example: 1
+        film:
+          $ref: '#/components/schemas/Film'
+        Room:
+          $ref: '#/components/schemas/Room'
+    Calendar:
+      type: object
+      properties:
+        week:
+          type: array
+          items:
+            $ref: '#/components/schemas/Day'
+    Day:
+      type: object
+      properties:
+        name:
+          type: string
+          example: monday
+        hours:
+          type: array
+          items:
+            $ref: '#/components/schemas/Hour'
+    Hour:
+      type: object
+      properties:
+        hour:
+          type: string
+          format: time
+        projection:
+          $ref: '#/components/schemas/Projection'
